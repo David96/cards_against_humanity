@@ -18,15 +18,19 @@ class CAH:
     def __init__(self, blacks, whites):
         self.blacks = blacks
         self.whites = whites
-        self.white_stack = list(whites)
-        self.black_stack = list(blacks)
-        self.table = defaultdict(list)
         self.players = {}
+        self.reset()
+
+    def reset(self):
+        self.white_stack = list(self.whites)
+        self.black_stack = list(self.blacks)
+        self.table = defaultdict(list)
         self.current = None
         self.game_started = False
         self.current_czar = 0
 
     def start_game(self):
+        self.reset()
         self.game_started = True
         for player in self.players.values():
             player.score = 0
@@ -97,6 +101,7 @@ class CAH:
         sorted_players = sorted(self.players.values(), key=lambda p1: p1.name)
         self.current_czar = (self.current_czar + 1) % len(sorted_players)
         sorted_players[self.current_czar].cardczar = True
+        self.table.clear()
         self.give_cards()
         if len(self.black_stack) < 1:
             self.black_stack = list(self.blacks)
