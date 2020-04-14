@@ -57,11 +57,14 @@ function onCardClicked(event) {
     }
 }
 
-function createCard(text) {
+function createCard(text, black = false) {
     var card = document.createElement('button');
     card.addEventListener('click', onCardClicked);
     card.appendChild(document.createTextNode(text));
     card.className = "card";
+    if (black) {
+        card.classList.add("black");
+    }
     return card;
 }
 
@@ -70,6 +73,7 @@ function renderState(state) {
     var hand = document.getElementById('hand');
     table.innerHTML = '';
     hand.innerHTML = '';
+    table.appendChild(createCard(state.current, true));
     state.table.forEach((cardList) => {
         var cardListElement = document.createElement('div');
         cardListElement.className = 'cardlist';
@@ -104,6 +108,7 @@ function createUserList(users) {
         if (user.cardczar) {
             text += " (Card Czar)";
         }
+        text += " (" + user.score + ")";
         li.appendChild(document.createTextNode(text));
         list.appendChild(li);
     });
