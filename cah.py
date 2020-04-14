@@ -41,24 +41,27 @@ class CAH:
 
     def get_owner_of_cards(self, selected_cards):
         found = False
+        print("Looking for %s" % selected_cards)
         for name, cards in self.table.items():
             print(set(cards))
             print(set(selected_cards))
             if set(cards) == set(selected_cards):
+                print('Found selected cards')
                 found = True
                 break
         if not found:
-            raise 'Selected cards don\'t exist!'
+            raise Exception('Selected cards don\'t exist!')
         return name
 
     def select_cards(self, selecting_player, selected_cards):
         if not self.players[selecting_player].cardczar:
-            raise 'Must be Card Czar to select a card!'
+            raise Exception('Must be Card Czar to select a card!')
         if not self.check_round_finished():
-            raise 'Round has not yet finished!'
+            raise Exception('Round has not yet finished!')
         name = self.get_owner_of_cards(selected_cards)
         self.players[name].score += 1
         self.new_round()
+        return name
 
     def give_cards_to(self, player):
         if not player.cardczar:
@@ -76,12 +79,12 @@ class CAH:
     def play_cards(self, playername, cards):
         player = self.players[playername]
         if player.cardczar:
-            raise 'Card Czar can\'t play a card!'
+            raise Exception('Card Czar can\'t play a card!')
         if player.cards_played + len(cards) > self.blanks():
-            raise 'Tried to play too many cards!'
+            raise Exception('Tried to play too many cards!')
         for card in cards:
             if card not in player.hand:
-                raise 'Can\'t play a card you don\'t have!'
+                raise Exception('Can\'t play a card you don\'t have!')
             self.table[player.name].append(card)
             player.cards_played += 1
             player.hand.remove(card)
@@ -109,7 +112,7 @@ class CAH:
         self.black_stack.remove(self.current)
 
     def blanks(self):
-        return self.current.count('_') if self.current else 0
+        return max(self.current.count('_'), 1) if self.current else 0
 
     def get_player_state(self, playername):
         player = self.players[playername]

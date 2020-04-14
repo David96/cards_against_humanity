@@ -8,9 +8,9 @@ import websockets
 from cah import CAH
 
 with open('blacks.txt') as f:
-    BLACKS = [line.strip() for line in f.readlines()]
+    BLACKS = [line.strip() for line in f.readlines() if line.strip() and not line.strip()[0] == '#']
 with open('whites.txt') as f:
-    WHITES = [line.strip() for line in f.readlines()]
+    WHITES = [line.strip() for line in f.readlines() if line.strip() and not line.strip()[0] == '#']
 
 GAME = CAH(BLACKS, WHITES)
 USERS = {}
@@ -65,8 +65,7 @@ async def remove_user(user):
     await send_message('%s left the game.' % user)
 
 async def select_cards(user, data):
-    GAME.select_cards(user, data['cards'])
-    owner = GAME.get_owner_of_cards(data['cards'])
+    owner = GAME.select_cards(user, data['cards'])
     await notify_users('state')
     await notify_users('user')
     await send_message('%s selected %s, point to %s' % (user, data['cards'], owner))
