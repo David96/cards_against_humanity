@@ -119,7 +119,7 @@ async def serve(websocket, path):
         if user:
             await remove_user(user)
 
-start_server = websockets.serve(serve, "localhost", 6789)
+start_server = websockets.serve(serve, "localhost", 6790)
 
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()
