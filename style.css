@@ -5,9 +5,13 @@ body, html {
     padding: 0;
 }
 
+.main, .controls, .game {
+    box-sizing: border-box;
+    height: 100%;
+}
+
 .main, .controls {
     float: left;
-    box-sizing: border-box;
 }
 
 .main {
@@ -16,6 +20,25 @@ body, html {
 
 .controls {
     width: 20%;
+    height: 100%;
+}
+
+.messages {
+    height: 63%;
+}
+
+.messages ul, .users ul {
+    height: calc(100% - 3.5em);
+    overflow: auto;
+}
+
+.messages ul {
+    list-style: none;
+    padding: 0;
+}
+
+.users {
+    height: 30%;
 }
 
 #table, #hand {
@@ -42,4 +65,8 @@ body, html {
     background-color: black;
     color: white;
     margin: 5px;
+}
+
+.error {
+    color: red;
 }
