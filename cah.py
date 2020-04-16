@@ -16,6 +16,7 @@ class Player:
 class CAH:
 
     def __init__(self, blacks, whites):
+        random.seed()
         self.blacks = blacks
         self.whites = whites
         self.players = {}
@@ -25,6 +26,7 @@ class CAH:
         self.white_stack = list(self.whites)
         self.black_stack = list(self.blacks)
         self.table = defaultdict(list)
+        self.shuffled_table = list()
         self.current = None
         self.game_started = False
         self.current_czar = 0
@@ -37,16 +39,19 @@ class CAH:
         self.new_round()
 
     def add_player(self, name):
-        self.players[name] = Player(name)
+        player = Player(name)
+        if self.game_started:
+            if self.check_round_finished():
+                # Pretend the new player has already played all cards so check_round_finished
+                # doesn't return false on the initial state sent to the player
+                player.cards_played = self.blanks()
+            self.give_cards_to(player)
+        self.players[name] = player
 
     def get_owner_of_cards(self, selected_cards):
         found = False
-        print("Looking for %s" % selected_cards)
         for name, cards in self.table.items():
-            print(set(cards))
-            print(set(selected_cards))
             if set(cards) == set(selected_cards):
-                print('Found selected cards')
                 found = True
                 break
         if not found:
@@ -64,13 +69,12 @@ class CAH:
         return name
 
     def give_cards_to(self, player):
-        if not player.cardczar:
-            if len(self.white_stack) < CARD_COUNT - len(player.hand):
-                self.white_stack = list(self.whites)
-            sample = random.sample(self.white_stack, CARD_COUNT - len(player.hand))
-            for card in sample:
-                self.white_stack.remove(card)
-            player.hand += sample
+        if len(self.white_stack) < CARD_COUNT - len(player.hand):
+            self.white_stack = list(self.whites)
+        sample = random.sample(self.white_stack, CARD_COUNT - len(player.hand))
+        for card in sample:
+            self.white_stack.remove(card)
+        player.hand += sample
 
     def give_cards(self):
         for player in self.players.values():
@@ -86,6 +90,8 @@ class CAH:
             if card not in player.hand:
                 raise Exception('Can\'t play a card you don\'t have!')
             self.table[player.name].append(card)
+            self.shuffled_table = list(self.table.values())
+            random.shuffle(self.shuffled_table)
             player.cards_played += 1
             player.hand.remove(card)
 
@@ -119,10 +125,8 @@ class CAH:
         round_finished = self.check_round_finished()
         cards_played = [l if name == playername else len(l) * ['']
                         for name, l in self.table.items()]
-        shuffled_table = list(self.table.values())
-        random.shuffle(shuffled_table)
         return {
-            'table': shuffled_table if round_finished else cards_played,
+            'table': self.shuffled_table if round_finished else cards_played,
             'round_finished': round_finished,
             'hand': player.hand,
             'current': self.current,
