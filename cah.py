@@ -102,8 +102,8 @@ class CAH:
             player.cards_played = 0
             player.cardczar = False
         sorted_players = sorted(self.players.values(), key=lambda p1: p1.name)
-        self.current_czar = (self.current_czar + 1) % len(sorted_players)
         sorted_players[self.current_czar].cardczar = True
+        self.current_czar = (self.current_czar + 1) % len(sorted_players)
         self.table.clear()
         self.give_cards()
         if len(self.black_stack) < 1:
@@ -119,8 +119,10 @@ class CAH:
         round_finished = self.check_round_finished()
         cards_played = [l if name == playername else len(l) * ['']
                         for name, l in self.table.items()]
+        shuffled_table = list(self.table.values())
+        random.shuffle(shuffled_table)
         return {
-            'table': list(self.table.values()) if round_finished else cards_played,
+            'table': shuffled_table if round_finished else cards_played,
             'round_finished': round_finished,
             'hand': player.hand,
             'current': self.current,
