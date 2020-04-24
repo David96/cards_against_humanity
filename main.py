@@ -59,9 +59,10 @@ async def add_user(websocket, name):
     return name
 
 async def remove_user(user):
-    del GAME.players[user]
+    GAME.remove_player(user)
     del USERS[user]
     await notify_users('user')
+    await notify_users('state')
     await send_message('%s left the game.' % user)
 
 async def select_cards(user, data):

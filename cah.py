@@ -48,6 +48,15 @@ class CAH:
             self.give_cards_to(player)
         self.players[name] = player
 
+    def remove_player(self, name):
+        if self.players[name].cardczar:
+            del self.players[name]
+            self.new_round()
+        else:
+            del self.players[name]
+            del self.table[name]
+            self.shuffle_table()
+
     def get_owner_of_cards(self, selected_cards):
         found = False
         for name, cards in self.table.items():
@@ -80,6 +89,10 @@ class CAH:
         for player in self.players.values():
             self.give_cards_to(player)
 
+    def shuffle_table(self):
+        self.shuffled_table = list(self.table.values())
+        random.shuffle(self.shuffled_table)
+
     def play_cards(self, playername, cards):
         player = self.players[playername]
         if player.cardczar:
@@ -90,8 +103,7 @@ class CAH:
             if card not in player.hand:
                 raise Exception('Can\'t play a card you don\'t have!')
             self.table[player.name].append(card)
-            self.shuffled_table = list(self.table.values())
-            random.shuffle(self.shuffled_table)
+            self.shuffle_table()
             player.cards_played += 1
             player.hand.remove(card)
 
